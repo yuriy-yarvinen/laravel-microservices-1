@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\UserCreateRequest;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
@@ -21,25 +22,33 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $user = User::create([
-            'first_name' => $request->input('first_name'),
-            'last_name' => $request->input('last_name'),
-            'email' => $request->input('email'),
-            'password' => Hash::make($request->input('password')),
+        $data = $request->validate([
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'email' => 'required|email|unique:users',
         ]);
+
+        $user = User::create(
+            $request->only(['first_name', 'last_name', 'email']) +
+                [
+                    'password' => Hash::make(1234),
+                    // 'password' => Hash::make($request->input('password')),
+                ]
+        );
 
         return response($user, Response::HTTP_CREATED);
     }
 
     public function update($id, Request $request)
     {
-        $user = User::findOrfail($id);
-        $user->update([
-            'first_name' => $request->input('first_name'),
-            'last_name' => $request->input('last_name'),
-            'email' => $request->input('email'),
-            'password' => Hash::make($request->input('password')),
+
+        $request->validate([
+            'email' => 'email',
         ]);
+
+        $user = User::findOrfail($id);
+        $user->update($request->only(['first_name', 'last_name', 'email']));
+
 
         return response($user, Response::HTTP_ACCEPTED);
     }
