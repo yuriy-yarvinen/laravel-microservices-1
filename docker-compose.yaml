@@ -20,7 +20,7 @@ services:
     ports:
       - 8000:8000
     volumes:
-      - .:/app
+      - .:/var/www/app
     depends_on:
       - db
     networks:
