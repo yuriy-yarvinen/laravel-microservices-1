@@ -16,7 +16,7 @@ services:
       DB_HOST: db
       DB_DATABASE: admin
       DB_USERNAME: root
-      DB_PASSWORD: root
+      DB_PASSWORD: strongr324!w.LdOOfword
     ports:
       - 8000:8000
     volumes:
@@ -31,17 +31,26 @@ services:
     image: mysql:8.0
     environment:
       MYSQL_DATABASE: admin
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: strongr324!w.LdOOfword
+      MYSQL_ROOT_PASSWORD: strongr324!w.LdOOfword
     volumes:
-      - .dbdata:/var/lib/mysql
       - .docker/mysql:/etc/mysql/conf.d
       - .docker/mysql/log:/var/log/mysql
+      - .docker/mysql/dbdata:/var/lib/mysql
     ports:
       - 33866:3386
     networks:
       - app
 
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      - PMA_HOST=db
+    networks:
+      - app
 networks:
   app: null
