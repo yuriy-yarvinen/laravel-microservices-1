@@ -9,4 +9,4 @@ docker-compose.yaml - container setup
 
 docker ps - see all running containers
 
-docker exec -it container_name sh
+docker exec -it --user www-data container_name sh - work in container terminal with user www-data
