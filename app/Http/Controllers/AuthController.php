@@ -21,7 +21,7 @@ class AuthController extends Controller
         }
 
         return response([
-            'error'=> 'Invalid credentials'
+            'error' => 'Invalid credentials'
         ], Response::HTTP_UNAUTHORIZED);
     }
 
@@ -36,12 +36,12 @@ class AuthController extends Controller
         ]);
 
         $user = User::create(
-                [
-                    'first_name' => $data['first_name'],
-                    'last_name' => $data['last_name'],
-                    'email' => $data['email'],
-                    'password' => Hash::make($data['password']),
-                ]
+            [
+                'first_name' => $data['first_name'],
+                'last_name' => $data['last_name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+            ]
         );
 
         return response($user, Response::HTTP_CREATED);
