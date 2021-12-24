@@ -17,12 +17,23 @@ class AuthController extends Controller
 
             $token = $user->createToken('admin')->accessToken;
 
-            return ['token' => $token];
+            $cookie = \cookie('jwt', $token, 3600);
+
+            return response(['token' => $token])->withCookie($cookie);
         }
 
         return response([
             'error' => 'Invalid credentials'
         ], Response::HTTP_UNAUTHORIZED);
+    }
+
+    public function logout()
+    {
+       $cookie = \Cookie::forget('jwt');
+
+       return response([
+           'message' => 'success'
+       ])->withCookie($cookie);
     }
 
     public function register(Request $request)

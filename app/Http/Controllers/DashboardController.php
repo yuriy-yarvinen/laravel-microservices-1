@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Order;
 use Illuminate\Http\Request;
 use App\Http\Resources\ChartResource;
+use Illuminate\Support\Facades\Gate;
 
 class DashboardController extends Controller
 {
     public function chart()
     {
+        Gate::authorize('view', 'orders');
 
         $orders = Order::query()
             ->join('order_items', 'orders.id', '=', 'order_items.order_id')
