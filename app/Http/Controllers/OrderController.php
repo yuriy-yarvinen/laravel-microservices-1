@@ -16,6 +16,8 @@ class OrderController extends Controller
      */
     public function index()
     {
+        Gate::authorize('view', 'orders');
+
         $orders = Order::paginate();
 
         return OrderResource::collection($orders);
@@ -29,6 +31,8 @@ class OrderController extends Controller
      */
     public function show($id)
     {
+        Gate::authorize('view', 'orders');
+
         $order = Order::findOrFail($id);
 
         return new OrderResource($order);
@@ -36,6 +40,8 @@ class OrderController extends Controller
 
     public function export()
     {
+        Gate::authorize('view', 'orders');
+
         $headers = [
             "Content-type" => "text/csv",
             "Content-Disposition" => "attachment; filename=orders.csv",
