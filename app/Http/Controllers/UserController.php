@@ -92,7 +92,7 @@ class UserController extends Controller
         return response(new UserResource($user), Response::HTTP_ACCEPTED);
     }
 
-    public function updatePassword($id, Request $request)
+    public function updatePassword(Request $request)
     {
         $request->validate([
             'password' => 'required',
@@ -103,7 +103,6 @@ class UserController extends Controller
         $user->update([
             'password' => Hash::make($request->input('password'))
         ]);
-
 
         return response(new UserResource($user), Response::HTTP_ACCEPTED);
     }

@@ -26,15 +26,16 @@ Route::post('register', 'AuthController@register');
 Route::group(['middleware' => 'auth:api'], function(){
     Route::post('logout', 'AuthController@logout');
 
+    Route::put('users/info', 'UserController@updateInfo');
+    Route::put('users/password', 'UserController@updatePassword');
+    Route::get('export', 'OrderController@export');
+    Route::get('chart', 'DashboardController@chart');
+    Route::get('user', 'UserController@user');
+    Route::post('upload', 'ImageController@upload');
+    
     Route::apiResource('users', 'UserController');
     Route::apiResource('roles', 'RoleController');
     Route::apiResource('products', 'ProductController');
     Route::apiResource('orders', 'OrderController')->only('index', 'show');
     Route::apiResource('permissions', 'PermissionController')->only('index');
-    Route::get('export', 'OrderController@export');
-    Route::get('chart', 'DashboardController@chart');
-    Route::get('user', 'UserController@user');
-    Route::post('upload', 'ImageController@upload');
-    Route::put('users/info', 'UserController@updateInfo');
-    Route::put('users/password', 'UserController@updatePassword');
 });
