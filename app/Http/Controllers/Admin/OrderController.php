@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
+
 
 use App\Order;
 use Illuminate\Http\Request;
@@ -8,7 +9,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Resources\OrderResource;
 
-class OrderController extends Controller
+class OrderController
 {
     /**
      * Display a listing of the resource.

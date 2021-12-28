@@ -14,31 +14,44 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::get('users', 'UserController@index');
-// Route::get('users/{id}', 'UserController@show');
-// Route::post('users', 'UserController@store');
-// Route::put('users/{id}', 'UserController@update');
-// Route::delete('users/{id}', 'UserController@destroy');
+// Common
 
 Route::post('login', 'AuthController@login');
 Route::post('register', 'AuthController@register');
 
 Route::group([
     'middleware' => 'auth:api',
-    'prefix' => 'admin'
-], function(){
+], function () {
+    Route::get('user', 'AuthController@user');
+    Route::put('users/info', 'AuthController@updateInfo');
+    Route::put('users/password', 'AuthController@updatePassword');
     Route::post('logout', 'AuthController@logout');
+});
 
-    Route::put('users/info', 'UserController@updateInfo');
-    Route::put('users/password', 'UserController@updatePassword');
+
+// Admin
+
+Route::group([
+    'middleware' => 'auth:api',
+    'prefix' => 'admin',
+    'namespace' => 'Admin',
+], function () {
     Route::get('export', 'OrderController@export');
     Route::get('chart', 'DashboardController@chart');
-    Route::get('user', 'UserController@user');
     Route::post('upload', 'ImageController@upload');
-    
     Route::apiResource('users', 'UserController');
     Route::apiResource('roles', 'RoleController');
     Route::apiResource('products', 'ProductController');
     Route::apiResource('orders', 'OrderController')->only('index', 'show');
     Route::apiResource('permissions', 'PermissionController')->only('index');
+});
+
+
+// Influencer
+
+Route::group([
+    'prefix' => 'influencer',
+    'namespace' => 'Influencer',
+], function () {
+    Route::get('products', 'ProductController@index');
 });

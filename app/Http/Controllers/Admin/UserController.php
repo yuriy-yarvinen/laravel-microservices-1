@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\User;
 use Illuminate\Http\Request;
@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpFoundation\Response;
 
-class UserController extends Controller
+class UserController
 {
     public function index()
     {
@@ -29,16 +29,6 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         return new UserResource($user);
-    }
-    public function user()
-    {
-        $user = Auth::user();
-
-        return (new UserResource($user))->additional([
-            'data' => [
-                'permissions' => $user->permissions()
-            ]
-        ]);
     }
 
     public function store(Request $request)
@@ -78,34 +68,6 @@ class UserController extends Controller
         return response(new UserResource($user), Response::HTTP_ACCEPTED);
     }
 
-    public function updateInfo(Request $request)
-    {
-
-        $request->validate([
-            'email' => 'email',
-        ]);
-
-        $user = Auth::user();
-        $user->update($request->only(['first_name', 'last_name', 'email']));
-
-
-        return response(new UserResource($user), Response::HTTP_ACCEPTED);
-    }
-
-    public function updatePassword(Request $request)
-    {
-        $request->validate([
-            'password' => 'required',
-            'password_confirm' => 'required|same:password',
-        ]);
-
-        $user = Auth::user();
-        $user->update([
-            'password' => Hash::make($request->input('password'))
-        ]);
-
-        return response(new UserResource($user), Response::HTTP_ACCEPTED);
-    }
 
     public function destroy($id)
     {

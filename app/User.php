@@ -70,4 +70,14 @@ class User extends Authenticatable
     {
         return $this->permissions()->contains($access);
     }
+
+    public function isAdmin()
+    {
+        return $this->is_influencer === 0;
+    }
+
+    public function isInfluencer()
+    {
+        return $this->is_influencer === 1;
+    }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\Product;
 use Illuminate\Support\Str;
@@ -10,7 +10,7 @@ use App\Http\Resources\ProductResource;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response;
 
-class ProductController extends Controller
+class ProductController
 {
     /**
      * Display a listing of the resource.

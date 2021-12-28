@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use App\User;
 use Illuminate\Http\Request;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpFoundation\Response;
 
-class AuthController extends Controller
+class AuthController
 {
     public function login(Request $request)
     {
@@ -29,11 +30,11 @@ class AuthController extends Controller
 
     public function logout()
     {
-       $cookie = \Cookie::forget('jwt');
+        $cookie = \Cookie::forget('jwt');
 
-       return response([
-           'message' => 'success'
-       ])->withCookie($cookie);
+        return response([
+            'message' => 'success'
+        ])->withCookie($cookie);
     }
 
     public function register(Request $request)
@@ -51,10 +52,58 @@ class AuthController extends Controller
                 'first_name' => $data['first_name'],
                 'last_name' => $data['last_name'],
                 'email' => $data['email'],
-                'password' => Hash::make($data['password'])
+                'password' => Hash::make($data['password']),
+                'role_id' => 1,
+                'is_influencer' => 1
             ]
         );
 
         return response($user, Response::HTTP_CREATED);
+    }
+
+    public function user()
+    {
+        $user = Auth::user();
+
+        $userResource = new UserResource($user);
+
+        if($user->isInfluencer()){
+            return $userResource;
+        }
+
+        return $userResource->additional([
+            'data' => [
+                'permissions' => $user->permissions()
+            ]
+        ]);
+    }
+
+    public function updateInfo(Request $request)
+    {
+
+        $request->validate([
+            'email' => 'email',
+        ]);
+
+        $user = Auth::user();
+        $user->update($request->only(['first_name', 'last_name', 'email']));
+
+
+        return response(new UserResource($user), Response::HTTP_ACCEPTED);
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'password' => 'required',
+            'password_confirm' => 'required|same:password',
+        ]);
+
+        $user = Auth::user();
+        $user->update([
+            'password' => Hash::make($request->input('password'))
+        ]);
+
+        return response(new UserResource($user), Response::HTTP_ACCEPTED);
     }
 }
