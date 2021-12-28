@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Order;
 use Illuminate\Http\Request;
-use App\Http\Resources\OrderResource;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Gate;
+use App\Http\Resources\OrderResource;
 
 class OrderController extends Controller
 {
