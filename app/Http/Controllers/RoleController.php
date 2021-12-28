@@ -99,10 +99,10 @@ class RoleController extends Controller
     public function destroy($id)
     {
         Gate::authorize('edit', 'roles');
-
-        Role::destroy($id);
-
+        
         DB::table('role_permission')->where(['role_id' => $id])->delete();
+        
+        Role::destroy($id);
 
         return response(null, Response::HTTP_NO_CONTENT);
     }
