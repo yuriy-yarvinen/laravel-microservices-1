@@ -1,20 +1,13 @@
 version: '3.8'
 services:
-  frontend:
-    image: antoniopapa1991/admin-frontend
-    depends_on:
-      - backend
-    networks:
-      - app
 
   backend:
-    container_name: admin_api
     build:
       context: .
       dockerfile: Dockerfile
     environment:
       DB_HOST: db
-      DB_DATABASE: admin
+      DB_DATABASE: influencer
       DB_USERNAME: root
       DB_PASSWORD: strongr324!w.LdOOfword
     ports:
@@ -27,10 +20,9 @@ services:
       - app
 
   db:
-    container_name: admin_db
     image: mysql:8.0
     environment:
-      MYSQL_DATABASE: admin
+      MYSQL_DATABASE: influencer
       MYSQL_USER: admin
       MYSQL_PASSWORD: strongr324!w.LdOOfword
       MYSQL_ROOT_PASSWORD: strongr324!w.LdOOfword
