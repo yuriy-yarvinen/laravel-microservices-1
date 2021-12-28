@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\UserCreateRequest;
 use App\Http\Resources\UserResource;
+use App\UserRole;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpFoundation\Response;
@@ -43,12 +44,17 @@ class UserController
         ]);
 
         $user = User::create(
-            $request->only(['first_name', 'last_name', 'email', 'role_id']) +
+            $request->only(['first_name', 'last_name', 'email']) +
                 [
                     'password' => Hash::make(1234),
                     // 'password' => Hash::make($request->input('password')),
                 ]
         );
+
+        UserRole::create([
+            'user_id' => $user->id,
+            'role_id' => $request->input('role_id'),
+        ]);
 
         return response(new UserResource($user), Response::HTTP_CREATED);
     }
@@ -62,8 +68,16 @@ class UserController
         ]);
 
         $user = User::findOrfail($id);
-        $user->update($request->only(['first_name', 'last_name', 'email', 'role_id']));
+        $user->update($request->only(['first_name', 'last_name', 'email']));
 
+        UserRole::where([
+            'user_id' => $user->id,
+        ])->delete();
+
+        UserRole::create([
+            'user_id' => $user->id,
+            'role_id' => $request->input('role_id'),
+        ]);
 
         return response(new UserResource($user), Response::HTTP_ACCEPTED);
     }
