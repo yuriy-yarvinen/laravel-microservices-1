@@ -12,11 +12,13 @@ class ProductController
 {
     public function index(Request $request)
     {
-		$result = Cache::get('produts');
+		$result = Cache::get('products');
 
 		if($result){
 			return $result;
 		}
+
+		sleep(2);
 
         $products = Product::all();
 
