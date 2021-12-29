@@ -10,6 +10,7 @@ use App\Product;
 use Cartalyst\Stripe\Stripe;
 use Illuminate\Http\Request;
 use Illuminate\Mail\Message;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController
 {
@@ -89,6 +90,15 @@ class OrderController
 
         $order->complete = 1;
         $order->save();
+
+        Mail::send('influencer/admin', ['order'=>$order], function(Message $message){
+            $message->to('admin@admin.com');
+            $message->substr('new order');
+        });
+        Mail::send('influencer/influencer', ['order'=>$order], function(Message $message) use ($order){
+            $message->to($order->influencer_email);
+            $message->substr('new order');
+        });
 
 //        event(new OrderCompletedEvent($order));
 
