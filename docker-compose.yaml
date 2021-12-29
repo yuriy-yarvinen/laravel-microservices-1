@@ -10,12 +10,14 @@ services:
       DB_DATABASE: influencer
       DB_USERNAME: root
       DB_PASSWORD: strongr324!w.LdOOfword
+      REDIS_HOST: redis
     ports:
       - 8000:8000
     volumes:
       - .:/var/www/app
     depends_on:
       - db
+      - redis
     networks:
       - app
 
@@ -32,6 +34,11 @@ services:
       - .docker/mysql/dbdata:/var/lib/mysql
     ports:
       - 33866:3386
+    networks:
+      - app
+  
+  redis:
+    image: redis:latest
     networks:
       - app
 

@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use App\Http\Requests\UserCreateRequest;
-use App\Http\Resources\UserResource;
 use App\UserRole;
+use Illuminate\Http\Request;
+use App\Events\AdminAddedEvent;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\UserCreateRequest;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserController
@@ -55,6 +56,8 @@ class UserController
             'user_id' => $user->id,
             'role_id' => $request->input('role_id'),
         ]);
+
+        event(new AdminAddedEvent($user));
 
         return response(new UserResource($user), Response::HTTP_CREATED);
     }

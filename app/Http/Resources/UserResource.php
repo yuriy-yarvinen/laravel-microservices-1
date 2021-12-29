@@ -26,6 +26,11 @@ class UserResource extends JsonResource
                 $UserResource['role'] = $this->role;
             }
         }
+        if(Auth::user()){
+            if(Auth::user()->isInfluencer()){
+                $UserResource['revenue'] = $this->revenue;
+            }
+        }
 
         return $UserResource;
     }

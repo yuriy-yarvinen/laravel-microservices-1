@@ -2,16 +2,22 @@
 
 namespace App\Http\Controllers\Influencer;
 
-use App\Http\Resources\ProductResource;
 use App\Product;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use App\Http\Resources\ProductResource;
 
 class ProductController
 {
     public function index(Request $request)
     {
+		$result = Cache::get('produts');
+
+		if($result){
+			return $result;
+		}
+
         $products = Product::all();
 
         if ($s = $request->input('s')) {
@@ -20,6 +26,10 @@ class ProductController
             });
         }
 
-        return ProductResource::collection($products);
+		$resource = ProductResource::collection($products);
+
+		Cache::set('products', $resource, 5);
+
+        return $resource;
     }
 }
