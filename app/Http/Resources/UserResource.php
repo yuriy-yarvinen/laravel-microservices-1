@@ -21,9 +21,10 @@ class UserResource extends JsonResource
             'last_name'=> $this->last_name,
             'email'=> $this->email,
         ];
-        
-        if(Auth::user()->isAdmin()){
-            $UserResource['role'] = $this->role;
+        if(Auth::user()){
+            if(Auth::user()->isAdmin()){
+                $UserResource['role'] = $this->role;
+            }
         }
 
         return $UserResource;
