@@ -15,57 +15,61 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Common
-
-Route::post('login', 'AuthController@login');
-Route::post('register', 'AuthController@register');
-
 Route::group([
     'middleware' => 'auth:api',
 ], function () {
+    Route::post('logout', 'AuthController@logout');
     Route::get('user', 'AuthController@user');
     Route::put('users/info', 'AuthController@updateInfo');
     Route::put('users/password', 'AuthController@updatePassword');
-    Route::post('logout', 'AuthController@logout');
 });
 
+Route::prefix('admin')->group(function () {
+    Route::post('login', 'AuthController@login');
+    Route::post('register', 'AuthController@register');
 
-// Admin
+    Route::middleware(['auth:api', 'scope:admin'])->group(function () {
+        Route::post('logout', 'AuthController@logout');
+        Route::get('user', 'AuthController@user');
+        Route::put('users/info', 'AuthController@updateInfo');
+        Route::put('users/password', 'AuthController@updatePassword');
 
-Route::group([
-    'middleware' => ['auth:api', 'scope:admin'],
-    'prefix' => 'admin',
-    'namespace' => 'Admin',
-], function () {
-    Route::get('export', 'OrderController@export');
-    Route::get('chart', 'DashboardController@chart');
-    Route::post('upload', 'ImageController@upload');
-    Route::apiResource('users', 'UserController');
-    Route::apiResource('roles', 'RoleController');
-    Route::apiResource('products', 'ProductController');
-    Route::apiResource('orders', 'OrderController')->only('index', 'show');
-    Route::apiResource('permissions', 'PermissionController')->only('index');
-});
+        Route::namespace('Admin')->group(function () {
+            Route::get('chart', 'DashboardController@chart');
+            Route::post('upload', 'ImageController@upload');
+            Route::get('export', 'OrderController@export');
 
-
-// Influencer
-
-Route::group([
-    'prefix' => 'influencer',
-    'namespace' => 'Influencer',
-], function () {
-    Route::get('products', 'ProductController@index');
-    Route::group([
-        'middleware' => ['auth:api', 'scope:influencer'],
-    ], function () {
-        Route::post('links', 'LinkController@store');
-        Route::get('stats', 'StatsController@index');
-        Route::get('rankings', 'StatsController@rankings');
+            Route::apiResource('users', 'UserController');
+            Route::apiResource('roles', 'RoleController');
+            Route::apiResource('products', 'ProductController');
+            Route::apiResource('orders', 'OrderController')->only('index', 'show');
+            Route::apiResource('permissions', 'PermissionController')->only('index');
+        });
     });
 });
 
 
-// Checkout
+// Influencer
+Route::prefix('influencer')->group(function () {
+    Route::post('login', 'AuthController@login');
+    Route::post('register', 'AuthController@register');
+    Route::get('products', 'Influencer\ProductController@index');
 
+    Route::middleware(['auth:api', 'scope:influencer'])->group(function () {
+        Route::post('logout', 'AuthController@logout');
+        Route::get('user', 'AuthController@user');
+        Route::put('users/info', 'AuthController@updateInfo');
+        Route::put('users/password', 'AuthController@updatePassword');
+
+        Route::namespace('Influencer')->group(function () {
+            Route::post('links', 'LinkController@store');
+            Route::get('stats', 'StatsController@index');
+            Route::get('rankings', 'StatsController@rankings');
+        });
+    });
+});
+
+// Checkout
 Route::group([
     'prefix' => 'checkout',
     'namespace' => 'Checkout',
