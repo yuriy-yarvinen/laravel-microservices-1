@@ -52,7 +52,7 @@ class ProductController
             'image' => $data['image'],
         ]);
 
-        event(new ProductUpdatedEvent($product));
+        event(new ProductUpdatedEvent());
 
         return response($product, Response::HTTP_CREATED);
     }
@@ -87,7 +87,7 @@ class ProductController
     
         $product->update($request->only('title', 'description', 'price', 'image'));
 
-        event(new ProductUpdatedEvent($product));
+        event(new ProductUpdatedEvent());
 
         return response($product, Response::HTTP_ACCEPTED);
     }

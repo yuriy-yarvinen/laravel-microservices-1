@@ -13,35 +13,51 @@ class ProductController
     public function index(Request $request)
     {
 
-		if($request->input('s')){
-			$key = "products_{$request->input('s')}";
-		}
-		else{
-			$key = "products";
-		}
+		// first way 
 
-		$productKeys = Cache::get('product_keys');
-		if(!$productKeys){
-			$productKeys = [];
+		$products = Cache::remember('products', 60*30, function(){
+			return Product::all();
+		});
+		
+		if ($s = $request->input('s')) {
+			$products = $products->filter(function (Product $product) use ($s) {
+				return Str::contains($product->title, $s) || Str::contains($product->description, $s);
+			});
 		}
 		
-		if(!in_array($key, $productKeys)){
-			$productKeys[] = $key;
-		}
+		return ProductResource::collection($products);
 
-		Cache::set('product_keys', $productKeys, 60*180);		
+		/// second way
 
-		return Cache::remember($key, 60*30, function() use ($request){
-			$products = Product::all();
+		// if($request->input('s')){
+		// 	$key = "products_{$request->input('s')}";
+		// }
+		// else{
+		// 	$key = "products";
+		// }
 
-			if ($s = $request->input('s')) {
-				$products = $products->filter(function (Product $product) use ($s) {
-					return Str::contains($product->title, $s) || Str::contains($product->description, $s);
-				});
-			}
+		// $productKeys = Cache::get('product_keys');
+		// if(!$productKeys){
+		// 	$productKeys = [];
+		// }
+		
+		// if(!in_array($key, $productKeys)){
+		// 	$productKeys[] = $key;
+		// }
+
+		// Cache::set('product_keys', $productKeys, 60*180);		
+
+		// return Cache::remember($key, 60*30, function() use ($request){
+		// 	$products = Product::all();
+
+		// 	if ($s = $request->input('s')) {
+		// 		$products = $products->filter(function (Product $product) use ($s) {
+		// 			return Str::contains($product->title, $s) || Str::contains($product->description, $s);
+		// 		});
+		// 	}
 	
-			return  ProductResource::collection($products);
-		});
+		// 	return  ProductResource::collection($products);
+		// });
 
     }
 }
