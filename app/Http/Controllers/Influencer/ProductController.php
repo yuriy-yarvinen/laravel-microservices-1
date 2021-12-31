@@ -12,26 +12,24 @@ class ProductController
 {
     public function index(Request $request)
     {
-		$result = Cache::get('products');
-
-		if($result){
-			return $result;
+		if($request->input('s')){
+			$key = "products_{$request->input('s')}";
+		}
+		else{
+			$key = "products";
 		}
 
-		sleep(2);
+		return Cache::remember($key, 60*30, function() use ($request){
+			$products = Product::all();
 
-        $products = Product::all();
+			if ($s = $request->input('s')) {
+				$products = $products->filter(function (Product $product) use ($s) {
+					return Str::contains($product->title, $s) || Str::contains($product->description, $s);
+				});
+			}
+	
+			return  ProductResource::collection($products);
+		});
 
-        if ($s = $request->input('s')) {
-            $products = $products->filter(function (Product $product) use ($s) {
-                return Str::contains($product->title, $s) || Str::contains($product->description, $s);
-            });
-        }
-
-		$resource = ProductResource::collection($products);
-
-		Cache::set('products', $resource, 5);
-
-        return $resource;
     }
 }
