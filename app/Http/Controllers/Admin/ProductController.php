@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Product;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Events\ProductUpdatedEvent;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Resources\ProductResource;
 use Illuminate\Support\Facades\Storage;
@@ -51,6 +52,8 @@ class ProductController
             'image' => $data['image'],
         ]);
 
+        event(new ProductUpdatedEvent($product));
+
         return response($product, Response::HTTP_CREATED);
     }
 
@@ -84,6 +87,8 @@ class ProductController
     
         $product->update($request->only('title', 'description', 'price', 'image'));
 
+        event(new ProductUpdatedEvent($product));
+
         return response($product, Response::HTTP_ACCEPTED);
     }
 
@@ -98,6 +103,8 @@ class ProductController
         Gate::authorize('edit', 'products');
 
         Product::destroy($id);
+
+        event(new ProductUpdatedEvent());
 
         return response(null, Response::HTTP_NO_CONTENT);
     }

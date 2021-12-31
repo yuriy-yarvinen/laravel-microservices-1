@@ -12,12 +12,24 @@ class ProductController
 {
     public function index(Request $request)
     {
+
 		if($request->input('s')){
 			$key = "products_{$request->input('s')}";
 		}
 		else{
 			$key = "products";
 		}
+
+		$productKeys = Cache::get('product_keys');
+		if(!$productKeys){
+			$productKeys = [];
+		}
+		
+		if(!in_array($key, $productKeys)){
+			$productKeys[] = $key;
+		}
+
+		Cache::set('product_keys', $productKeys, 60*180);		
 
 		return Cache::remember($key, 60*30, function() use ($request){
 			$products = Product::all();
