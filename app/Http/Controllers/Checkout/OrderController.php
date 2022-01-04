@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Checkout;
 
 use App\Events\OrderCompletedEvent;
+use App\Jobs\OrderComplited;
 use App\Link;
 use App\Order;
 use App\OrderItem;
@@ -38,11 +39,11 @@ class OrderController
 
         $lineItems = [];
 
-    
+
         foreach ($request->input('items') as $item) {
-            if($item['quantity'] > 0){
+            if ($item['quantity'] > 0) {
                 $product = Product::find($item['product_id']);
-                
+
                 $orderItem = new OrderItem();
                 $orderItem->order_id = $order->id;
                 $orderItem->product_title = $product->title;
@@ -50,9 +51,9 @@ class OrderController
                 $orderItem->quantity = $item['quantity'];
                 $orderItem->influencer_revenue = 0.1 * $product->price * $item['quantity'];
                 $orderItem->admin_revenue = 0.9 * $product->price * $item['quantity'];
-    
+
                 $orderItem->save();
-    
+
                 $lineItems[] = [
                     'name' => $product->title,
                     'description' => $product->description,
@@ -64,9 +65,8 @@ class OrderController
                     'quantity' => $orderItem->quantity,
                 ];
             }
-
         }
-    
+
         $stripe = Stripe::make(env('STRIPE_SECRET'));
 
         $source = $stripe->checkout()->sessions()->create([
@@ -95,7 +95,13 @@ class OrderController
         $order->complete = 1;
         $order->save();
 
-       event(new OrderCompletedEvent($order));
+        event(new OrderCompletedEvent($order));
+
+        $orderArray = $order->toArray();
+        $orderArray['admin_total'] = $order->admin_total;
+        $orderArray['influencer_total'] = $order->influencer_total;
+
+        OrderComplited::dispatch($orderArray);
 
         return response([
             'message' => 'success',
