@@ -16,7 +16,7 @@ class NotifyAdminListener
         $order = $event->order;
         Mail::send('influencer.admin', ['order'=>$order], function(Message $message){
             $message->to('admin@admin.com');
-            $message->substr('new order');
+            $message->subject('new order');
         });
 
     }

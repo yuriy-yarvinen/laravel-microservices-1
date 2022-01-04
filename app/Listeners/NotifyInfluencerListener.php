@@ -17,7 +17,7 @@ class NotifyInfluencerListener
         
         Mail::send('influencer.influencer', ['order'=>$order], function(Message $message) use ($order){
             $message->to($order->influencer_email);
-            $message->substr('new order');
+            $message->subject('new order');
         });
     }
 }
