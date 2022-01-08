@@ -2,7 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\AdminAdded;
+use App\Order;
+use App\Jobs\OrderComplited;
 use Illuminate\Console\Command;
 
 class FireEventCommand extends Command
@@ -11,6 +12,12 @@ class FireEventCommand extends Command
 
     public function handle()
     {
-        AdminAdded::dispatch('e@e.com');
+        $order = Order::find(50);
+
+        $orderArray = $order->toArray();
+        $orderArray['admin_total'] = $order->admin_total;
+        $orderArray['influencer_total'] = $order->influencer_total;
+
+        OrderComplited::dispatch($orderArray);
     }
 }

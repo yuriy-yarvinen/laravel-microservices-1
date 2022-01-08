@@ -5,8 +5,6 @@ namespace App\Listeners;
 use App\User;
 use App\Events\OrderCompletedEvent;
 use Illuminate\Support\Facades\Redis;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
 class UpdateRankingsListener
 {
