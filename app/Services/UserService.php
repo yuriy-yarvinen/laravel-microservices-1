@@ -9,9 +9,16 @@ class UserService{
 
 	public function headers()
 	{
-		return [
-            'Authorization' => request()->headers->get('Authorization')
-		];
+		$headers = [];
+        if($jwt = request()->cookie('jwt')){
+            $headers['Authorization'] = "Bearer {$jwt}";
+        }
+
+		if(request()->headers->get('Authorization')){
+			$headers['Authorization'] = request()->headers->get('Authorization');
+		}
+
+		return $headers;
 	}
 
 	public function getUser(): User

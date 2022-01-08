@@ -3,7 +3,6 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Auth;
 
 class UserResource extends JsonResource
 {
@@ -21,16 +20,6 @@ class UserResource extends JsonResource
             'last_name'=> $this->last_name,
             'email'=> $this->email,
         ];
-        if(Auth::user()){
-            if(Auth::user()->isAdmin()){
-                $UserResource['role'] = $this->role;
-            }
-        }
-        if(Auth::user()){
-            if(Auth::user()->isInfluencer()){
-                $UserResource['revenue'] = $this->revenue;
-            }
-        }
 
         return $UserResource;
     }
