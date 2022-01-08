@@ -24,7 +24,7 @@ class UserController
     {
         (new UserService())->allows('view', 'users');
 
-        $user = User::findOrFail($id);
+        $user = (new UserService())->get($id);
 
         return new UserResource($user);
     }
