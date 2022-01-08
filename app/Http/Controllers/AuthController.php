@@ -18,7 +18,7 @@ class AuthController
         if($user->isInfluencer()){
             return $userResource->additional([
                 'data' => [
-                    'revenue' => $user->revenue
+                    'revenue' => $user->revenue()
                 ]
             ]);
         }

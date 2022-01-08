@@ -3,13 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Product;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Services\UserService;
 use App\Events\ProductUpdatedEvent;
-use Illuminate\Support\Facades\Gate;
 use App\Http\Resources\ProductResource;
-use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response;
 
 class ProductController
@@ -17,7 +14,7 @@ class ProductController
 
     public function index()
     {
-        Gate::authorize('view', 'products');
+        (new UserService())->allows('view', 'products');
 
         $products = Product::paginate();
 

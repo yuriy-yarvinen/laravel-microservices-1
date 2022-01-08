@@ -27,23 +27,11 @@ class UserService{
 		return Http::withHeaders($this->headers());
 	}
 
-	public function parseUser($json): User
-	{
-		$user = new User();
-		$user->id = $json['id'];
-		$user->last_name = $json['last_name'];
-		$user->first_name = $json['first_name'];
-		$user->email = $json['email'];
-		$user->is_influencer = $json['is_influencer'] ?? 0;
-        
-		return $user;
-	}
-
 	public function getUser(): User
 	{
         $json = $this->request()->get(config('microservices_urls.USER_SERVICE_URL')."/user")->json();
 
-		return $this->parseUser($json);
+		return new User($json);
 	}
 
 	public function isAdmin()
@@ -66,11 +54,37 @@ class UserService{
 		return $this->request()->get(config('microservices_urls.USER_SERVICE_URL')."/users?page={$page}")->json();
 	}
 
+	public function getCustomUsers($data)
+	{
+		return $this->request()->post(config('microservices_urls.USER_SERVICE_URL')."/customUsers", $data)->json();
+	}
+
 	public function get($id): User
 	{
 		$json = $this->request()->get(config('microservices_urls.USER_SERVICE_URL')."/users/{$id}")->json();
 
-		return $this->parseUser($json);
+		return new User($json);
 
+	}
+
+	public function create($data): User
+	{
+		$json = $this->request()->post(config('microservices_urls.USER_SERVICE_URL')."/users", $data)->json();
+
+		return new User($json);
+
+	}
+
+	public function update($id, $data): User
+	{
+		$json = $this->request()->put(config('microservices_urls.USER_SERVICE_URL')."/users/{$id}", $data)->json();
+
+		return new User($json);
+
+	}
+
+	public function delete($id)
+	{
+		return $this->request()->delete(config('microservices_urls.USER_SERVICE_URL')."/users/{$id}")->successful();
 	}
 }

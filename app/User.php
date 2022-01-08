@@ -10,9 +10,18 @@ class User
 
     public $id;
     public $first_name;
-    public $last_nam;
+    public $last_name;
     public $email;
     public $is_influencer;
+
+    public function __construct($json)
+    {
+        $this->id = $json['id'];        
+        $this->first_name = $json['first_name'];        
+        $this->last_name = $json['last_name'];        
+        $this->email = $json['email'];        
+        $this->is_influencer = $json['is_influencer'] ?? 0;        
+    }
 
     public function role()
     {
@@ -41,7 +50,7 @@ class User
         return $this->is_influencer === 1;
     }
 
-    public function getRevenueAttribute()
+    public function revenue()
     {
         $orders = Order::where('user_id', $this->id)->where('complete', 1)->get();
 
@@ -50,7 +59,7 @@ class User
         });
     }
 
-    public function getFullNameAttribute()
+    public function fullName()
     {
         return $this->first_name . ' ' . $this->last_name;
     }

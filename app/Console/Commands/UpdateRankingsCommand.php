@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\User;
 use App\Order;
+use App\Services\UserService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Redis;
 
@@ -13,15 +13,16 @@ class UpdateRankingsCommand extends Command
 
     public function handle()
     {
-        $users = User::where('is_influencer', 1)->get();
 
-        $users->each(function (User $user) {
+        $users = (new UserService())->getCustomUsers(['is_influencer' => 1]);
+
+        $users->each(function ($user) {
             $orders = Order::where('user_id', $user->id)->where('complete', 1)->get();
             $revenue = $orders->sum(function (Order $order) {
                 return (int) $order->influencer_total;
             });
 
-            Redis::zadd('rankings', $revenue, $user->full_name);
+            Redis::zadd('rankings', $revenue, $user->email);
         });
     }
 }

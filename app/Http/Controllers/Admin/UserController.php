@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\User;
 use App\UserRole;
 use Illuminate\Http\Request;
 use App\Http\Resources\UserResource;
-use Illuminate\Support\Facades\Hash;
 use App\Jobs\AdminAdded;
 use App\Services\UserService;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,7 +24,16 @@ class UserController
 
         $user = (new UserService())->get($id);
 
-        return new UserResource($user);
+        $userResource = new UserResource($user);
+
+        $userResource->additional([
+            'data' => [
+                'role' => $user->role()
+            ]
+        ]);
+
+        return $userResource;
+
     }
 
     public function store(Request $request)
@@ -40,13 +47,9 @@ class UserController
             'email' => 'required|email|unique:users',
         ]);
 
-        $user = User::create(
-            $request->only(['first_name', 'last_name', 'email']) +
-                [
-                    'password' => Hash::make(1234),
-                    // 'password' => Hash::make($request->input('password')),
-                ]
-        );
+        $data = $request->only(['first_name', 'last_name', 'email']) + ['password' => 1234];
+
+        $user = (new UserService())->create($data);
 
         UserRole::create([
             'user_id' => $user->id,
@@ -66,8 +69,9 @@ class UserController
             'email' => 'email',
         ]);
 
-        $user = User::findOrfail($id);
-        $user->update($request->only(['first_name', 'last_name', 'email']));
+        $data = $request->only(['first_name', 'last_name', 'email']);
+
+        $user = (new UserService())->update($id, $data);
 
         UserRole::where([
             'user_id' => $user->id,
@@ -87,7 +91,7 @@ class UserController
 
         (new UserService())->allows('edit', 'users');
 
-        User::destroy($id);
+        (new UserService())->delete($id);
 
         return response(null, Response::HTTP_NO_CONTENT);
     }
