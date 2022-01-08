@@ -20,9 +20,8 @@ Route::prefix('admin')->group(function () {
     Route::post('login', 'AuthController@login');
     Route::post('register', 'AuthController@register');
 
-    Route::middleware(['auth:api', 'scope:admin'])->group(function () {
+    Route::middleware('scope.admin')->group(function () {
         Route::post('logout', 'AuthController@logout');
-        Route::get('user', 'AuthController@user');
         Route::put('users/info', 'AuthController@updateInfo');
         Route::put('users/password', 'AuthController@updatePassword');
 
@@ -47,7 +46,7 @@ Route::prefix('influencer')->group(function () {
     Route::post('register', 'AuthController@register');
     Route::get('products', 'Influencer\ProductController@index');
 
-    Route::middleware(['auth:api', 'scope:influencer'])->group(function () {
+    Route::middleware('scope.influencer')->group(function () {
         Route::post('logout', 'AuthController@logout');
         Route::get('user', 'AuthController@user');
         Route::put('users/info', 'AuthController@updateInfo');

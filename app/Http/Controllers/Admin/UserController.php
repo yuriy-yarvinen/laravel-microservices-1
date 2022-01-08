@@ -6,26 +6,23 @@ use App\User;
 use App\UserRole;
 use Illuminate\Http\Request;
 use App\Http\Resources\UserResource;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use App\Jobs\AdminAdded;
+use App\Services\UserService;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserController
 {
-    public function index()
+    public function index(Request $request)
     {
-        Gate::authorize('view', 'users');
+        (new UserService())->allows('view', 'users');
 
-        $users = User::paginate(); 
-
-        return UserResource::collection($users);
+        return (new UserService())->all($request->input('page', 1));
     }
 
     public function show($id)
     {
-        Gate::authorize('view', 'users');
+        (new UserService())->allows('view', 'users');
 
         $user = User::findOrFail($id);
 
@@ -34,7 +31,7 @@ class UserController
 
     public function store(Request $request)
     {
-        Gate::authorize('edit', 'users');
+        (new UserService())->allows('edit', 'users');
 
         $request->validate([
             'first_name' => 'required',
@@ -63,7 +60,7 @@ class UserController
 
     public function update($id, Request $request)
     {
-        Gate::authorize('edit', 'users');
+        (new UserService())->allows('edit', 'users');
 
         $request->validate([
             'email' => 'email',
@@ -88,7 +85,7 @@ class UserController
     public function destroy($id)
     {
 
-        Gate::authorize('edit', 'users');
+        (new UserService())->allows('edit', 'users');
 
         User::destroy($id);
 

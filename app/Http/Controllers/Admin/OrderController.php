@@ -4,36 +4,24 @@ namespace App\Http\Controllers\Admin;
 
 
 use App\Order;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Gate;
+use App\Services\UserService;
 use App\Http\Resources\OrderResource;
 
 class OrderController
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
-        Gate::authorize('view', 'orders');
+        (new UserService())->allows('view', 'orders');
 
         $orders = Order::paginate();
 
         return OrderResource::collection($orders);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
-        Gate::authorize('view', 'orders');
+        (new UserService())->allows('view', 'orders');
 
         $order = Order::findOrFail($id);
 
@@ -42,7 +30,7 @@ class OrderController
 
     public function export()
     {
-        Gate::authorize('view', 'orders');
+        (new UserService())->allows('view', 'orders');
 
         $headers = [
             "Content-type" => "text/csv",
@@ -73,5 +61,4 @@ class OrderController
 
         return \Response::stream($callback, 200, $headers);
     }
-
 }
